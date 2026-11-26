@@ -27,6 +27,7 @@ import java.util.Map;
 
 import freemarker.template.Configuration;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
 import org.junit.jupiter.api.condition.JRE;
@@ -129,6 +130,7 @@ class FreeMarkerMacroTests {
 
 	@Test
 	@DisabledForJreRange(min = JRE.JAVA_21)
+	@Disabled("Seal: fails as of JDK 17.0.14 (upstream observed the same on JDK 21+); upstream commit ebd80bdd6c deleted this test on 6.1.x for that reason; unrelated to patched code")
 	public void age() throws Exception {
 		testMacroOutput("AGE", "99");
 	}

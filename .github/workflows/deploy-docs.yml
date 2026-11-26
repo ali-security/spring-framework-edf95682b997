@@ -1,20 +1,12 @@
 name: Deploy Docs
 on:
-  push:
-    branches:
-      - 'main'
-      - '*.x'
-      - '!gh-pages'
-    tags:
-      - 'v*'
-  repository_dispatch:
-    types: request-build-reference # legacy
   workflow_dispatch:
 permissions:
   actions: write
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     if: github.repository_owner == 'spring-projects'
     steps:
     - name: Check out code
