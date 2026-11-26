@@ -670,7 +670,9 @@ class ResourceWebHandlerTests {
 			testInvalidPath("/../.." + secretPath, handler);
 			testInvalidPath("/%2E%2E/testsecret/secret.txt", handler);
 			testInvalidPath("/%2E%2E/testsecret/secret.txt", handler);
-			testInvalidPath("%2F%2F%2E%2E%2F%2F%2E%2E" + secretPath, handler);
+			testInvalidPath("%252E%252E%252Ftestsecret%252Fsecret.txt", handler);
+			testInvalidPath("%252e%252e%252ftestsecret%252fsecret.txt", handler);
+			testInvalidPath("%2E%2E%252Ftestsecret/secret.txt", handler);
 		}
 
 		private void testInvalidPath(String requestPath, ResourceWebHandler handler) {
@@ -705,7 +707,6 @@ class ResourceWebHandlerTests {
 			testResolvePathWithTraversal(method, "/url:" + secretPath);
 			testResolvePathWithTraversal(method, "////../.." + secretPath);
 			testResolvePathWithTraversal(method, "/%2E%2E/testsecret/secret.txt");
-			testResolvePathWithTraversal(method, "%2F%2F%2E%2E%2F%2Ftestsecret/secret.txt");
 			testResolvePathWithTraversal(method, "url:" + secretPath);
 
 			// The following tests fail with a MalformedURLException on Windows
@@ -756,6 +757,15 @@ class ResourceWebHandlerTests {
 			assertThat(this.handler.processPath("/")).isEqualTo("/");
 			assertThat(this.handler.processPath("///")).isEqualTo("/");
 			assertThat(this.handler.processPath("/ /   / ")).isEqualTo("/");
+
+			// encoded or double-encoded "../" is decoded and normalized
+			assertThat(this.handler.processPath("foo/%2e%2e/bar")).isEqualTo("bar");
+			assertThat(this.handler.processPath("foo/%252e%252e/bar")).isEqualTo("bar");
+			assertThat(this.handler.processPath("%2e%2e%2fbar")).isEqualTo("../bar");
+			assertThat(this.handler.processPath("%252e%252e%252fbar")).isEqualTo("../bar");
+
+			// other encoded characters are left unchanged
+			assertThat(this.handler.processPath("/foo/a%20b.txt")).isEqualTo("/foo/a%20b.txt");
 		}
 
 		@Test
